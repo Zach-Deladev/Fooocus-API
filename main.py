@@ -47,20 +47,10 @@ def git_clone(url, dir, name, hash=None):
     import pygit2
 
     try:
-        try:
+        if os.path.isdir(dir) or os.path.exists(dir):
+            print(f"{name} exists.")
             repo = pygit2.Repository(dir)
-            remote_url = repo.remotes['origin'].url
-            if remote_url not in [fooocus_gitee_repo, fooocus_github_repo]:
-                print(f'{name} exists but remote URL will be updated.')
-                del repo
-                raise url
-            else:
-                print(f'{name} exists and URL is correct.')
-            url = remote_url
-        except:
-            if os.path.isdir(dir) or os.path.exists(dir):
-                print("Fooocus exists, but not a git repo. You can find how to solve this problem here: https://github.com/konieshadow/Fooocus-API#use-exist-fooocus")
-                sys.exit(1)
+        else:
             os.makedirs(dir, exist_ok=True)
             repo = pygit2.clone_repository(url, dir)
             print(f'{name} cloned from {url}.')
@@ -77,6 +67,7 @@ def git_clone(url, dir, name, hash=None):
     except Exception as e:
         print(f'Git clone failed for {name}: {str(e)}')
         raise e
+
 
 
 # This function was copied from [Fooocus](https://github.com/lllyasviel/Fooocus) repository.
@@ -167,7 +158,6 @@ def requirements_met(requirements_file):
 
 def download_repositories():
     import pygit2
-    import requests
 
     pygit2.option(pygit2.GIT_OPT_SET_OWNER_VALIDATION, 0)
 
@@ -182,15 +172,9 @@ def download_repositories():
         print(f"Using https proxy for git clone: {https_proxy}")
         os.environ['https_proxy'] = https_proxy
 
-    try:
-        requests.get("https://policies.google.com/privacy", timeout=5)
-        fooocus_repo_url = fooocus_github_repo
-    except:
-        fooocus_repo_url = fooocus_gitee_repo
-    fooocus_repo = os.environ.get(
-        'FOOOCUS_REPO', fooocus_repo_url)
-    git_clone(fooocus_repo, repo_dir(fooocus_name),
-              "Fooocus", fooocus_commit_hash)
+    fooocus_repo_url = fooocus_github_repo
+    git_clone(fooocus_repo_url, repo_dir(fooocus_name), "Fooocus", fooocus_commit_hash)
+
 
 
 def is_installed(package):
