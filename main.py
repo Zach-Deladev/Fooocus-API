@@ -11,28 +11,30 @@ from fooocus_api_version import version
 from fooocusapi.repositories_versions import fooocus_commit_hash
 sys.path.append(os.path.dirname(os.path.realpath(__file__)))
 
-
+# Printing the system arguments
 print('[System ARGV] ' + str(sys.argv))
 
+# Setting environmental variables for PyTorch
 os.environ["PYTORCH_ENABLE_MPS_FALLBACK"] = "1"
 os.environ["PYTORCH_MPS_HIGH_WATERMARK_RATIO"] = "0.0"
 
+# Defining variables for Python executable and other settings
 python = sys.executable
 default_command_live = True
 index_url = os.environ.get('INDEX_URL', "")
 re_requirement = re.compile(r"\s*([-_a-zA-Z0-9]+)\s*(?:==\s*([-+_.a-zA-Z0-9]+))?\s*")
 
+# Defining variables for the application name and GitHub repo
 fooocus_name = 'Fooocus'
-
-
 fooocus_github_repo = 'https://github.com/Zach-Deladev/Fooocus'
 
+# Setting up paths for modules and script
 modules_path = os.path.dirname(os.path.realpath(__file__))
 script_path = modules_path
 dir_repos = "repositories"
 
 
-# This function was copied from [Fooocus](https://github.com/lllyasviel/Fooocus) repository.
+# Function to handle errors during directory removal
 def onerror(func, path, exc_info):
     import stat
     if not os.access(path, os.W_OK):
@@ -42,7 +44,7 @@ def onerror(func, path, exc_info):
         raise 'Failed to invoke "shutil.rmtree", git management failed.'
 
 
-# This function was copied from [Fooocus](https://github.com/lllyasviel/Fooocus) repository.
+# Function to clone a git repository
 def git_clone(url, dir, name, hash=None):
     import pygit2
 
@@ -70,12 +72,12 @@ def git_clone(url, dir, name, hash=None):
 
 
 
-# This function was copied from [Fooocus](https://github.com/lllyasviel/Fooocus) repository.
+# Function to define the repository directory path
 def repo_dir(name):
     return os.path.join(script_path, dir_repos, name)
 
 
-# This function was copied from [Fooocus](https://github.com/lllyasviel/Fooocus) repository.
+# Function to run a command in the shell and handle its output
 def run(command, desc=None, errdesc=None, custom_env=None, live: bool = default_command_live) -> str:
     if desc is not None:
         print(desc)
@@ -108,7 +110,7 @@ def run(command, desc=None, errdesc=None, custom_env=None, live: bool = default_
     return result.stdout or ""
 
 
-# This function was copied from [Fooocus](https://github.com/lllyasviel/Fooocus) repository.
+# Function to run pip commands with specific configurations
 def run_pip(command, desc=None, live=default_command_live):
     try:
         index_url_line = f' --index-url {index_url}' if index_url != '' else ''
@@ -120,20 +122,11 @@ def run_pip(command, desc=None, live=default_command_live):
         return None
 
 
-# This function was copied from [Fooocus](https://github.com/lllyasviel/Fooocus) repository.
+# Function to check if the requirements from a file are met
 def requirements_met(requirements_file):
-    """
-    Does a simple parse of a requirements.txt file to determine if all requirements in it
-    are already installed. Returns True if so, False if not installed or parsing fails.
-    """
 
     import importlib.metadata
     import packaging.version
-
-   
-
-   
-
 
     with open(requirements_file, "r", encoding="utf8") as file:
         for line in file:
@@ -160,7 +153,7 @@ def requirements_met(requirements_file):
 
     return True
 
-
+# Function to download and set up git repositories
 def download_repositories():
     import pygit2
 
@@ -181,7 +174,7 @@ def download_repositories():
     git_clone(fooocus_repo_url, repo_dir(fooocus_name), "Fooocus", fooocus_commit_hash)
 
 
-
+# Function to check if a package is installed
 def is_installed(package):
     try:
         spec = find_spec(package)
@@ -190,7 +183,7 @@ def is_installed(package):
 
     return spec is not None
 
-
+#Function to download model files from specified URLs
 def download_models():
     vae_approx_filenames = [
         ('xlvaeapp.pth', 'https://huggingface.co/lllyasviel/misc/resolve/main/xlvaeapp.pth'),
@@ -223,7 +216,7 @@ def download_models():
         file_name='pytorch_model.bin'
     )
 
-
+#Function to install dependencies if not already present
 def install_dependents(args):
     if not args.skip_pip:
         torch_index_url = os.environ.get('TORCH_INDEX_URL', "https://download.pytorch.org/whl/cu121")
@@ -263,7 +256,7 @@ def install_dependents(args):
     sys.path.append(fooocus_path)
     os.environ["PYTORCH_ENABLE_MPS_FALLBACK"] = "1"
 
-
+# Function to prepare the environment for running the application
 def prepare_environments(args) -> bool:
     import fooocusapi.worker as worker
     worker.task_queue.queue_size = args.queue_size
@@ -313,7 +306,7 @@ def prepare_environments(args) -> bool:
 
     return True
 
-
+# Function to pre-configure the setup with various options
 def pre_setup(skip_sync_repo: bool = False,
               disable_private_log: bool = False,
               skip_pip=False,
@@ -370,7 +363,7 @@ def pre_setup(skip_sync_repo: bool = False,
     print("[Pre Setup] Finished")
 
 
-# This function was copied from [Fooocus](https://github.com/lllyasviel/Fooocus) repository.
+#Function to initialize command line arguments
 def ini_cbh_args():
     from args_manager import args
     return args
@@ -380,7 +373,7 @@ def preplaod_pipeline():
     print("Preload pipeline")
     import modules.default_pipeline as _
 
-
+# Main script execution block
 if __name__ == "__main__":
     print(f"Python {sys.version}")
     print(f"Fooocus-API version: {version}")

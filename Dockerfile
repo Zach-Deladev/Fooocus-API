@@ -12,6 +12,7 @@ ENV VIRTUAL_ENV=/opt/venv
 RUN virtualenv $VIRTUAL_ENV
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
+RUN pip install torch==2.1.0 torchvision==0.16.0 torchaudio==2.1.0 --index-url https://download.pytorch.org/whl/cu121
 RUN pip install packaging
 
 WORKDIR /app
