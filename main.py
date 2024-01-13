@@ -130,6 +130,11 @@ def requirements_met(requirements_file):
     import importlib.metadata
     import packaging.version
 
+   
+
+   
+
+
     with open(requirements_file, "r", encoding="utf8") as file:
         for line in file:
             if line.strip() == "":
